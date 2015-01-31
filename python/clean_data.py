@@ -43,6 +43,17 @@ def correct(word):
     candidates = known([word]) or known(edits1(word)) or known_edits2(word) or [word]
     return max(candidates, key=NWORDS.get)
 
+
+# My own function to get the city code from city code context
+def getcityCode(city_context):
+	city_context_array=city_context.split(':')
+	if len(city_context_array[0].strip())>0:
+		return int(city_context_array[0])
+	else:
+		return -1
+		
+
+
 print "## Data Cleaning Going to Start##"
 
 print "## Opened the File##"
@@ -60,15 +71,16 @@ for t in csv.DictReader(open('data/hackathon_chat_data.csv'),delimiter=","):
 		if corrected_word in tags:
 			relevant_word=1
 			if corrected_word not in data_tags:
-				data_tags.append(corrected_word)
+				data_tags.append(str(corrected_word))
 
 	if relevant_word==1:
 		try:
-			data['timestamp']=datetime.datetime.fromtimestamp(int(str(t['UNIX Time Stamp']))).strftime('%Y-%m-%d')
+			data['timestamp']=datetime.datetime.fromtimestamp(int(str(t['UNIX Time Stamp']))).strftime('%Y-%m-%d %H:%M:%S')
 		except Exception, e:
 			data['timestamp']=datetime.datetime.fromtimestamp(int(str("00000000"))).strftime('%Y-%m-%d')
 	    
-		data['message']=sentence
-		data['tag']=data_tags
+		data['message']=str(sentence)
+		data['tag']=str(data_tags)
+		data['chat_city']=getcityCode(str(t['chat_location_context']))
 		print data 
 		
