@@ -17,7 +17,7 @@ var port = process.env.PORT || 3080;
 var mongo=require('mongoskin');
 //var db=monk('localhost:27017/mylinks');
 var db=mongo.db("mongodb://localhost:27017/chat_logs",{native_parser:true});
-var hh={};
+var city_code;
 var kk={};
 var heartObject={}
 var xx,yy;
@@ -49,7 +49,10 @@ router.route('/api/hotspots')
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 
-
+app.param('cleaned_chats', function(req, res, next, collectionName){
+  req.collection = db.collection(collectionName)
+  return next()
+})
 
 
 app.get('/', function(req, res) {
@@ -61,10 +64,11 @@ app.get('/cleaned_chat/logs',function(req,res){
   console.log("Inside Basic Log Find");
   db.collection('cleaned_chats').find().toArray(function(e,docs){
     if(!e){
-      res.send(docs)
+      res.send(docs);
+      console.log(docs._id);
     }else{
       console.log(e);
-      res.send("Failed! Please check Console errors")
+      res.send("Failed! Please check Console errors");
     }
 
   })
@@ -72,7 +76,34 @@ app.get('/cleaned_chat/logs',function(req,res){
 
 
 
+app.get('/cleaned_chat/logs/find_tags_by_city/:city_code',function(req,res){
+  console.log("Inside Find By City Code");
+   city_code=req.params.city_code.valueOf();
+  // db.collection('cleaned_chats').find({"chat_city":Math.round(city_code)},{"tag":1,"_id":0}).toArray(function(e,docs){
+  //   if(!e){
+  //     res.send(docs);
+  //   }else{
+  //     console.log(e);
+  //     res.send("Failed!Please Check Console Errors");
+  //   }
+  // })
+//});
+db.collection('cleaned_chats').aggregate([
+{$match: { "chat_city": Math.round(city_code)}},  
+{$unwind: "$tag"},  
+{$group: {_id:{'tag':"$tag"},
+           num_tags:{$sum:1}}}
+],function(e,docs){
+  if(!e){
+    res.send(docs);
+  }else{
+    console.log(e);
+    res.send("Failed");
+  }
+}) 
+              
 
+})
 
 
 
