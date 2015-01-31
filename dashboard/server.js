@@ -32,27 +32,14 @@ router.use(function(req,res,next){
 	next();
 });
 
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
-	res.json({ message: 'hooray! welcome to our api!' });	
-});
-
-// more routes for our API will happen here
-
-router.route('/api/hotspots')
- .post(function(req,res){
 
 
- });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 
-app.param('cleaned_chats', function(req, res, next, collectionName){
-  req.collection = db.collection(collectionName)
-  return next()
-})
+
 
 
 app.get('/', function(req, res) {
