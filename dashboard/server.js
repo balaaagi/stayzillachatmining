@@ -61,6 +61,25 @@ app.get('/cleaned_chat/logs',function(req,res){
   })
 })
 
+app.get('/cleaned_chat/logs/find_tag_count_time',function(req,res){
+   console.log("Inside Find tag Count by time");
+   
+
+db.collection('cleaned_chats').aggregate([
+  
+{$unwind: "$tag"},  
+{$group: {_id:{'time':"$timestamp"},
+           num_tags:{$sum:1}}}
+],function(e,docs){
+  if(!e){
+    res.send(docs);
+  }else{
+    console.log(e);
+    res.send("Failed");
+  }
+}) 
+
+})
 
 app.get('/cleaned_chat/logs/find_tag_count',function(req,res){
    console.log("Inside Find tag Count");
