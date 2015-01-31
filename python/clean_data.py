@@ -5,15 +5,24 @@ import csv
 import nltk
 import datetime
 import re, collections
+import pymongo
+from pymongo import MongoClient
 
 message=[]
 tags=['hotel','stay','trip','travel','room','resort','book','price','accomodation','cost','price','suite','tour','home stay','accom']
-data={}
-
-## Spell Checker For Validating the spelling from http://norvig.com/spell-correct.html
 
 
 
+
+# MongoDB Connection
+client=MongoClient('localhost', 27017)
+# Connecting to DataBase
+db=client.chat_logs
+# Connection to the collections
+# chat=db.cleaned_chats
+
+
+## Spell Checker For Validating the spelling from http://norvig.com/spell-correct.html begins
 def words(text): return re.findall('[a-z]+', text.lower()) 
 
 def train(features):
@@ -42,7 +51,7 @@ def known(words): return set(w for w in words if w in NWORDS)
 def correct(word):
     candidates = known([word]) or known(edits1(word)) or known_edits2(word) or [word]
     return max(candidates, key=NWORDS.get)
-
+## Spell Checker For Validating the spelling from http://norvig.com/spell-correct.html ends
 
 # My own function to get the city code from city code context
 def getcityCode(city_context):
@@ -64,14 +73,22 @@ for t in csv.DictReader(open('data/hackathon_chat_data.csv'),delimiter=","):
 
 	sentence=str(t['Chat Message']).lower().decode("utf8","ignore")
 	message_text=nltk.Text(sentence)
+	data={}
 	data_tags=[]
 	relevant_word=0
 	for word in sentence.split():
-		corrected_word=correct(word)
-		if corrected_word in tags:
+		# corrected_word=correct(word)
+		if word in tags:
 			relevant_word=1
-			if corrected_word not in data_tags:
-				data_tags.append(str(corrected_word))
+			if word not in data_tags:
+				data_tags.append(str(word))
+		else:
+			corrected_word=correct(word)
+			if corrected_word in tags:
+				relevant_word=1
+				if corrected_word not in data_tags:
+					data_tags.append(str(corrected_word))
+				
 
 	if relevant_word==1:
 		try:
@@ -80,7 +97,9 @@ for t in csv.DictReader(open('data/hackathon_chat_data.csv'),delimiter=","):
 			data['timestamp']=datetime.datetime.fromtimestamp(int(str("00000000"))).strftime('%Y-%m-%d')
 	    
 		data['message']=str(sentence)
-		data['tag']=str(data_tags)
+		data['tag']=data_tags
 		data['chat_city']=getcityCode(str(t['chat_location_context']))
-		print data 
+		print data
+		# Insert the json data into MongoDB
+		db.cleaned_chats.insert(data) 
 		
