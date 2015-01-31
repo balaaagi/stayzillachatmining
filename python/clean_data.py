@@ -6,7 +6,7 @@ import nltk
 
 
 message=[]
-tags=['hotel','stay','trip']
+tags=['hotel','stay','trip','travel','room','resort','book','price','accomodation','cost','price','suite','tour','home stay']
 data={}
 
 # sentence="hellow world this is an awesome world we have great hotel also i would like to stay there"
