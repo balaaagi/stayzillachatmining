@@ -62,6 +62,26 @@ app.get('/cleaned_chat/logs',function(req,res){
 })
 
 
+app.get('/cleaned_chat/logs/find_tag_count',function(req,res){
+   console.log("Inside Find tag Count");
+   
+
+db.collection('cleaned_chats').aggregate([
+  
+{$unwind: "$tag"},  
+{$group: {_id:{'tag':"$tag"},
+           num_tags:{$sum:1}}}
+],function(e,docs){
+  if(!e){
+    res.send(docs);
+  }else{
+    console.log(e);
+    res.send("Failed");
+  }
+}) 
+
+})
+
 
 app.get('/cleaned_chat/logs/find_tags_by_city/:city_code',function(req,res){
   console.log("Inside Find By City Code");
