@@ -58,7 +58,7 @@ def correct(word):
 # My own function to get the city code from city code context
 def getcityCode(city_context):
 	city_context_array=city_context.split(':')
-	if len(city_context_array[0].strip())>10 and city_context_array[0].isdigit():
+	if len(city_context_array[0].strip())>10:
 		return int(city_context_array[0])
 	else:
 		return -1
@@ -103,7 +103,10 @@ for t in csv.DictReader(open('data/hackathon_chat_data.csv'),delimiter=","):
 
 		data['message']=str(sentence).encode('utf-8')
 		data['tag']=data_tags
-		data['chat_city']=getcityCode(str(t['chat_location_context']))
+		try:
+			data['chat_city']=getcityCode(str(t['chat_location_context']))
+		except Exception, e:
+			data['chat_city']=getcityCode(" ")	
 		# print data
 		# Insert the json data into MongoDB
 		db.cleaned_chats.insert(data) 
