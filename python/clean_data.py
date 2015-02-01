@@ -17,7 +17,7 @@ tags=['hotel','stay','trip','travel','room','resort','book','price','accomodatio
 
 
 # MongoDB Connection
-client=MongoClient('labs.balaaagi.me', 27017)
+client=MongoClient('localhost', 27017)
 # Connecting to DataBase
 db=client.chat_logs
 # Connection to the collections
