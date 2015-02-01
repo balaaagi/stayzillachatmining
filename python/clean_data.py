@@ -7,6 +7,8 @@ import datetime
 import re, collections
 import pymongo
 from pymongo import MongoClient
+import codecs
+
 
 message=[]
 tags=['hotel','stay','trip','travel','room','resort','book','price','accomodation','cost','price','suite','tour','home stay','accom']
@@ -15,7 +17,7 @@ tags=['hotel','stay','trip','travel','room','resort','book','price','accomodatio
 
 
 # MongoDB Connection
-client=MongoClient('localhost', 27017)
+client=MongoClient('labs.balaaagi.me', 27017)
 # Connecting to DataBase
 db=client.chat_logs
 # Connection to the collections
@@ -56,7 +58,7 @@ def correct(word):
 # My own function to get the city code from city code context
 def getcityCode(city_context):
 	city_context_array=city_context.split(':')
-	if len(city_context_array[0].strip())>0:
+	if len(city_context_array[0].strip())>10 and city_context_array[0].isdigit():
 		return int(city_context_array[0])
 	else:
 		return -1
@@ -67,10 +69,11 @@ print "## Data Cleaning Going to Start##"
 
 print "## Opened the File##"
 
+print "##Started Cleaning the file....."
 for t in csv.DictReader(open('data/hackathon_chat_data.csv'),delimiter=","):
 
 
-
+	print "..."
 	sentence=str(t['Chat Message']).lower().decode("utf8","ignore")
 	message_text=nltk.Text(sentence)
 	data={}
@@ -96,10 +99,16 @@ for t in csv.DictReader(open('data/hackathon_chat_data.csv'),delimiter=","):
 		except Exception, e:
 			data['timestamp']=datetime.datetime.fromtimestamp(int(str("00000000"))).strftime('%Y-%m-%d')
 	    
-		data['message']=str(sentence)
+		
+
+		data['message']=str(sentence).encode('utf-8')
 		data['tag']=data_tags
 		data['chat_city']=getcityCode(str(t['chat_location_context']))
-		print data
+		# print data
 		# Insert the json data into MongoDB
 		db.cleaned_chats.insert(data) 
+
+
+
+print "Successfully Cleaned the Data"
 		
