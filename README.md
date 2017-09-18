@@ -1,18 +1,19 @@
-###StayZilla Hackathon Data Cleaning and Implementation
+### StayZilla Hackathon Data Cleaning and Implementation
 
-####Data Cleaning
-*Use the datadump in the data folder
+#### Data Cleaning
+* Use the datadump in the data folder
 		run in terminal python clean_data.py
 
-*Ensure that MongoDB is running 
+* Ensure that MongoDB is running 
 
 This script cleans the data and inserts into the mongoDB
 
 
-####Node API
+#### Node API
+``
 		run npm install
 		run node server.js
-
+``
 
 Access the following urls patterns for various api
 The node app runs in localhost @ port 3080
